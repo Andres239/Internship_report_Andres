@@ -1,0 +1,2 @@
+Measuring on non suspende region. (region 5)
+acquisition time: 2000

@@ -1,0 +1,1 @@
+Repetition of measurement of max power 2 seconds per acquisition on region 3. Strange behavior seen on last measurement

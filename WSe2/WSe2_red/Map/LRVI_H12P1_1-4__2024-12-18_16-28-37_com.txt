@@ -1,0 +1,3 @@
+WSe2 suspended over hole (1 layer)
+633 nm 1uW 11x11 10 seconds per point
+

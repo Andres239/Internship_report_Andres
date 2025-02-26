@@ -1,0 +1,2 @@
+First measurement of the day. Region 1, supported monolayer. Low power
+acquisition time: 2000

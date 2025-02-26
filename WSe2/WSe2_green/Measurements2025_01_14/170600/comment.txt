@@ -1,0 +1,1 @@
+Repeating last measurement on region 4 to check if it is also broken. Power increased and also number of spectra. 2 seconds per spectra

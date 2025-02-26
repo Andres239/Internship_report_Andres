@@ -1,0 +1,3 @@
+Repetition of measurement with focus at 10um, position verified
+acquisition time: 2000ms
+Max power at the sample:50uW

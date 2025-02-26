@@ -1,0 +1,3 @@
+Supported region below the hole
+acquisition time: 1000ms
+Max power at the sample:3200uW

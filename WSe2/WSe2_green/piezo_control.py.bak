@@ -1,0 +1,67 @@
+from pipython import GCSDevice
+import time
+
+
+def list_usb_devices():
+    controller = GCSDevice()
+    devices = controller.EnumerateUSB()
+    if not devices:
+        print("No USB devices found.")
+    else:
+        print("Available USB devices:")
+        for device in devices:
+            print(device)  # Each device contains its address and description
+
+
+# Initialize and connect to the PI E-727 Controller
+def initialize_controller():
+    controller = GCSDevice()  # Create the GCS device instance
+    #controller.OpenUSBDaisyChain(description="E-727")  # Connect via USB, adjust if needed
+    controller.ConnectUSB(address=1)  # Use address 1; change if there are multiple controllers
+    print("Connected to PI E-727 Controller.")
+    return controller
+
+# Move to a specific position
+def move_to_position(controller, axes, x, y):
+    """
+    Moves the specified axes (e.g., ['X', 'Y']) to the (x, y) position.
+
+    :param controller: The GCSDevice instance
+    :param axes: List of axis names, e.g., ['X', 'Y']
+    :param x: Target position for the X axis
+    :param y: Target position for the Y axis
+    """
+    positions = {axes[0]: x, axes[1]: y}  # Define target positions for X and Y
+    controller.MOV(positions)  # Move the axes to the target positions
+    print(f"Moving to position X={x}, Y={y}")
+
+    # Wait for the motion to complete
+    while not controller.IsControllerReady():
+        time.sleep(0.1)
+
+    print(f"Reached position X={x}, Y={y}.")
+
+# Main function
+def main():
+    # Connect to the controller
+    list_usb_devices()
+    controller = initialize_controller()
+    
+    try:
+        # Define the axes and target positions
+        axes = ['X', 'Y']  # Axes names defined in the controller configuration
+        target_positions = [(0, 0), (1, 1), (2, 2)]  # Example target positions in µm or mm
+
+        # Move to each position
+        for x, y in target_positions:
+            move_to_position(controller, axes, x, y)
+            time.sleep(1)  # Optional: Wait for 1 second between moves
+
+    finally:
+        # Close the connection to the controller
+        controller.CloseConnection()
+        print("Disconnected from PI E-727 Controller.")
+
+if __name__ == "__main__":
+    
+    main()

@@ -1,0 +1,2 @@
+This is a test for the new power calibration and the reversibility =False
+acquisition time: 2000ms

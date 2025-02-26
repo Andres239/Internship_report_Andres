@@ -1,0 +1,2 @@
+Region 1, 50uW at the sample max
+acquisition time: 2000ms

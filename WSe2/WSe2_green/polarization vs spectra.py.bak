@@ -1,0 +1,128 @@
+import os
+import time
+import numpy as np
+import scipy
+from scipy import interpolate
+from matplotlib.pyplot import *
+import matplotlib.patches as patches
+import scipy.optimize as optimize
+from pyvisa import * 
+ion()
+
+
+
+###loading Pylon camera
+os.chdir("C:/Users/Administrateur/Documents/Scripts_Python/Drivers_instruments/Camera_Pylon/")
+import Pylon_init as pyl
+
+
+
+##import motorized polarizers
+os.chdir("C:/Users/Administrateur/Documents/ximc/scripts/GotThePower/")
+import StandaPolar_init_v32bits as std
+
+lib = std.lib
+device_id1 = std.device_id1
+device_id2 = std.device_id2
+
+
+
+####################################################################################
+dir_0 = "C:\Users\Administrateur\Desktop\Sotos\test\"
+dir_run="testdir"
+try:
+	os.mkdir(dir_0+dir_run)
+except:
+	print("exists already")
+
+
+
+####################################################################
+##Find the power for a given half-waveplate angle
+L_list = np.linspace(-5,40,16)
+k = 10
+std.move(lib, device_id2, L_list[k])
+
+P_res = 1e-6*np.array([6.,5.,11.,23.,40.0,62.3,88.0,116.8,147.3,178,207.5,234,258,277,290,297])
+
+L_cible = scipy.interpolate.interp1d(P_res,L_list,kind="linear")        ##le bon angle pour une puissance donnée
+P_list = np.linspace(5,297,100)*1e-6
+figure()
+ax = subplot(111)
+ax.set_xlabel("Angle L/2 (deg)")
+ax.set_ylabel("Measured optical power - 633 nm (uW)")
+plot(L_list,P_res*1e6,'o')
+plot(L_cible(P_list),P_list*1e6,'-')
+
+#################################################################################################
+##TESTS
+
+std.get_position_deg(lib, device_id2)
+k=15
+std.move(lib, device_id2, L_cible(P_list[k]))
+
+
+
+Nmap=20
+sizeV=10
+dl=(0,0)
+asserv_param=DC_asserv(Nmap,sizeV,dl,"center",dir_0+dir_run,1,1)
+
+
+################################################################
+##PARAMETERS
+
+
+P_list=np.linspace(30,150,31)*1e-6
+
+Tacq_list=np.linspace(30,10,31)
+
+
+
+
+BS="5050" #Beam splitter utilisé
+grating=1800  #gr/mm
+
+
+#Temps acquisition spectre en MINUTES
+
+
+
+filename_0="231120_Balor_PL_633nm_"+str(BS)+"_"+str(grating)+"gr_"
+
+
+######################################################
+##MEASUREMENT
+
+for n in range(len(P_list)):
+    filename=filename_0+str(P_list[n]*1e6)+"uW"
+    std.move(lib, device_id2, L_cible(P_list[n]))
+    time.sleep(1)
+    pyl.acquire_and_save(dir_0+dir_run,filename,Tacq_list[n]*60*1000)   #avoir temps d'expo en ms
+
+std.move(lib, device_id2, L_cible(P_list[0]))
+
+
+###############################################################################################
+##OUVERTURE
+
+#opening spectrum file
+
+filename_res="231120_Balor_PL_633nm_5050_1800gr_54.0uW"
+
+f = open(dir_0+dir_run+filename_res+".dat","r")
+tmp = f.readlines()
+f.close()
+spectrum=[]
+for k in range(len(tmp)):
+    tmp_ = list(map(float,tmp[k].split("\n'")))
+    spectrum.append(tmp_)
+
+    
+figure()
+ax=subplot(111)
+ax.set_xlim(0,1340)   #size of detector in pixel
+ax.set_ylabel("Intensity")
+plot(spectrum)
+
+
