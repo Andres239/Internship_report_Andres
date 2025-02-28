@@ -210,7 +210,7 @@ def remove_map_offset(x_range, data_range, offset_points):
         new_x, new_data[:,i] = rgf.Remove_spikes(x_range, data_range[:, i], spike1, spike2)
     return new_x, new_data
 '''
-def make_map(x, data, map_size, x_min, x_max, offset_points = 10):
+def make_map(x, data, map_size, x_min, x_max, offset_points = 20):
     x_range, data_range = select_range(x, data, x_min, x_max)
     
     
